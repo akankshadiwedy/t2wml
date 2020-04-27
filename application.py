@@ -266,6 +266,7 @@ def upload_data_file():
                 data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_name)
 
                 yaml_config = load_yaml_config(yaml_config_file_path)
+                code = yaml_config.get_code()
                 template = yaml_config.get_template()
                 region = yaml_config.get_region()
                 response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region,
@@ -339,6 +340,7 @@ def change_sheet():
                 data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
 
                 yaml_config = load_yaml_config(yaml_config_file_path)
+                code = yaml_config.get_code()
                 template = yaml_config.get_template()
                 region = yaml_config.get_region()
                 response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, new_sheet_name,
@@ -420,7 +422,8 @@ def upload_yaml():
             wikifier_config_file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
             wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
             item_table = ItemTable(wikifier_config)
-            region, template, created_by = load_yaml_data(yaml_file_path, item_table, data_file_path, sheet_name)
+            code, region, template, created_by = load_yaml_data(yaml_file_path, item_table, data_file_path, sheet_name)
+            yaml_configuration.set_code(code)
             yaml_configuration.set_region(region)
             yaml_configuration.set_template(template)
             yaml_configuration.set_created_by(created_by)
@@ -457,6 +460,7 @@ def get_cell_statement():
             Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
         yaml_config = load_yaml_config(yaml_config_file_path)
         data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+        code = yaml_config.get_code()
         template = yaml_config.get_template()
         region = yaml_config.get_region()
         region_map, region_file_name = get_region_mapping(user_id, project_id, project)
@@ -489,7 +493,7 @@ def downloader():
     template = yaml_config.get_template()
     region = yaml_config.get_region()
     created_by = yaml_config.get_created_by()
-
+    code = yaml_config.get_code()
     region_map, region_file_name = get_region_mapping(user_id, project_id, project)
     item_table = ItemTable(region_map)
     sparql_endpoint = project.get_sparql_endpoint()

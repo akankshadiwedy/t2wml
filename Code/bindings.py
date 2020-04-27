@@ -7,5 +7,6 @@ bindings = {
     "$bottom": None,
     "excel_sheet": None,
     "item_table": None,
-    "created_by": None
+    "created_by": None,
+    "code": None
 }

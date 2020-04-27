@@ -9,6 +9,7 @@ class YAMLFile:
 		self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None, 'region_object': None}
 		self.__template = None
 		self.__created_by = 't2wml'
+		self.__code = None
 
 	def get_file_location(self) -> str:
 		"""
@@ -38,8 +39,16 @@ class YAMLFile:
 		"""
 		return copy.deepcopy(self.__template)
 
+
 	def get_created_by(self) -> str:
 		return self.__created_by
+
+	def get_code(self) -> str:
+		"""
+		This function returns the code
+		:return:
+		"""
+		return self.__code
 
 	def set_file_location(self, file_location: str) -> None:
 		"""
@@ -72,6 +81,14 @@ class YAMLFile:
 		"""
 		self.__template = template
 
+	def set_code(self, code: str) -> None:
+		"""
+		This function sets the code
+		:param code:
+		:return:
+		"""
+		self.__code = code
+
 	def set_created_by(self, created_by:str) -> None:
 		self.__created_by = created_by
 
@@ -89,3 +106,4 @@ class YAMLFile:
 		self.__file_location = None
 		self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None}
 		self.__template = None
+		self.__code = None

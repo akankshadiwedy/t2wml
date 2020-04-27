@@ -10,6 +10,7 @@ from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
 from Code.ColumnRangeExpression import ColumnRangeExpression
 from Code.RowRangeExpression import RowRangeExpression
+from Code.EvalExpression import EvalExpression
 from pathlib import Path
 __CWD__ = os.getcwd()
 
@@ -25,6 +26,12 @@ def generate_tree(program: str) -> Union[ValueExpression]:
     """
     parse_tree = parser.parse(program)
     root = class_dictionary[parse_tree.children[0].data]()
+    if isinstance(root, EvalExpression):
+        print(parse_tree)
+        if parse_tree.children[0].children[2].type == 'SYMBOL':
+            root.symbol = str(parse_tree.children[0].children[2])
+        elif parse_tree.children[0].children[2].type == 'STRING':
+            root.string_expression = str(parse_tree.children[0].children[2])[1:-1] #removing the inverted commas from the string input
     for instruction in parse_tree.children[0].children:
         if isinstance(instruction, Tree):
             create_class_tree(instruction, root)
@@ -38,6 +45,7 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
     :param root:
     :return: None
     """
+    #print(instruction.data)
     if instruction.data == "cell_expression":
         node = class_dictionary[instruction.data]()
         root.cell_expression = node
@@ -151,7 +159,6 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
         for i in instruction.children:
             if isinstance(i, Tree):
                 create_class_tree(i, root.item_expression)
-
 
 def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     """

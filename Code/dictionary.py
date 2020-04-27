@@ -13,6 +13,7 @@ from Code.Expression import Expression
 from Code.ItemExpression import ItemExpression
 from Code.ColumnRangeExpression import ColumnRangeExpression
 from Code.RowRangeExpression import RowRangeExpression
+from Code.EvalExpression import EvalExpression
 
 class_dictionary = {
     'value_expression': ValueExpression,
@@ -29,5 +30,6 @@ class_dictionary = {
     'expression': Expression,
     'item_expression': ItemExpression,
     'column_range_expression': ColumnRangeExpression,
-    'row_range_expression': RowRangeExpression
+    'row_range_expression': RowRangeExpression,
+    'eval_expression': EvalExpression
 }

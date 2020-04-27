@@ -19,6 +19,7 @@ from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
 from etk.wikidata.utils import parse_datetime_string
+from Code.EvalExpression import EvalExpression
 
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
@@ -90,7 +91,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
         try:
             data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
             data["dataRegion"].add(data_cell)
-            if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
+            if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, EvalExpression)):
                 try:
                     if item.variables:
                         variables = list(item.variables)
@@ -120,7 +121,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
             if qualifiers:
                 qualifier_cells = set()
                 for qualifier in qualifiers:
-                    if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation)):
+                    if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, EvalExpression)):
                         try:
                             if qualifier["value"].variables:
                                 variables = list(qualifier["value"].variables)
@@ -261,11 +262,12 @@ def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: st
     """
     yaml_parser = YAMLParser(yaml_filepath)
     update_bindings(item_table, None, data_file_path, sheet_name)
+    code = yaml_parser.get_code(bindings)
     region = yaml_parser.get_region(bindings)
     region['region_object'] = Region(region, item_table, data_file_path, sheet_name)
     template = yaml_parser.get_template()
     created_by = yaml_parser.get_created_by()
-    return region, template, created_by
+    return code, region, template, created_by
 
 
 def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str,
@@ -297,7 +299,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
             for i in range(len(template[key])):
                 temp_dict = dict()
                 for k, v in template[key][i].items():
-                    if isinstance(v, (ItemExpression, ValueExpression)):
+                    if isinstance(v, (ItemExpression, ValueExpression, EvalExpression)):
                         if v.variables:
                             variables = list(v.variables)
                             num_of_variables = len(variables)
@@ -341,7 +343,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                             raise e
                 response[key].append(temp_dict)
         else:
-            if isinstance(value, (ItemExpression, ValueExpression)):
+            if isinstance(value, (ItemExpression, ValueExpression, EvalExpression)):
                 if value.variables:
                     variables = list(value.variables)
                     num_of_variables = len(variables)

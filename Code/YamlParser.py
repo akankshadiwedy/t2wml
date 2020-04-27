@@ -8,6 +8,7 @@ from Code.RowExpression import RowExpression
 from Code.ValueExpression import ValueExpression
 from Code.bindings import bindings
 from Code.BooleanEquation import BooleanEquation
+from Code.EvalExpression import EvalExpression
 from Code.t2wml_parser import parse_and_evaluate, generate_tree
 
 
@@ -194,6 +195,28 @@ class YAMLParser:
         self.resolve_template(template)
         return template
 
+    def get_code(self, bindings: dict) -> str:
+        """
+        This function resolves and returns the code
+        :return:
+        """
+        if 'code' in self.yaml_data['statementMapping'].keys():
+            code = self.yaml_data['statementMapping']['code']
+            self.resolve_code(code)
+            bindings['code'] = code
+        else:
+            code = None
+        return code
+
+    def resolve_code(self, code):
+        """
+        This function executes the functions in code and initializes their description
+        :param code: code
+        :return:
+        """
+        exec(code)
+
+
     def get_created_by(self) -> str:
         try:
             created_by = self.yaml_data['statementMapping']['created_by']
@@ -202,7 +225,7 @@ class YAMLParser:
         return created_by
 
     def iterate_on_variables(self, parse_tree: Union[
-        ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression], bindings: dict) -> Union[
+        ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression, EvalExpression], bindings: dict) -> Union[
         int, str]:
         """
         This function checks if there are any variable iterators present in the parse tree.
@@ -213,7 +236,7 @@ class YAMLParser:
         :return:
         """
         value = None
-        if isinstance(parse_tree, (ItemExpression, ValueExpression, BooleanEquation)):
+        if isinstance(parse_tree, (ItemExpression, ValueExpression, BooleanEquation, EvalExpression)):
             if parse_tree.variables:
                 variables = list(parse_tree.variables)
                 num_of_variables = len(variables)

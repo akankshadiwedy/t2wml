@@ -4,6 +4,7 @@ start: value_expression
     | column_expression
     | row_expression
     | boolean_expression
+    | eval_expression
 
 !expression: cell_expression
        | value_expression
@@ -11,6 +12,10 @@ start: value_expression
        | STRING             -> expression_string
        | column_expression
        | row_expression
+       | eval_expression
+
+!eval_expression: "eval" "(" SYMBOL ("," value_expression)* ")"
+               | "eval" "(" STRING ("," value_expression)* ")"
 
 !value_expression: "value" "(" cell_expression ")"
                 | "value" "(" boolean_equation ")"
@@ -48,6 +53,7 @@ cell_operator_argument: WHOLE_NUMBER | VARIABLE
 
 
 VARIABLE: LETTER+
+SYMBOL: /[a-zA-Z_]+/
 WHOLE_NUMBER: ("0".."9")+
 %import common.ESCAPED_STRING   -> STRING
 %import common.LETTER
